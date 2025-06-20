@@ -11,8 +11,8 @@ lib.isValidUPI.argtypes = [ctypes.c_char_p]
 lib.isValidUPI.restype = ctypes.c_bool
 
 # Telegram Bot token and admin setup
-token = os.environ.get("TOKEN")
-admin_chat_id = int(os.environ.get("ADMIN_CHAT_ID", "123456789"))
+token = "7114393656:AAEhqBLjEHCC5M0DYuWCkxpM88OvroF4xQo"
+admin_chat_id = 6610363281
 bot = Bot(token=token)
 
 # Channel usernames to verify subscriptions
@@ -88,7 +88,6 @@ def button_handler(update: Update, context: CallbackContext):
     if query.data == "enter_upi":
         context.bot.send_message(chat_id=user_id, text="💡 Send your UPI ID now:")
 
-# Text handler for UPI submission
 def text_handler(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     upi = update.message.text.strip()
@@ -122,8 +121,7 @@ def menu_buttons(update: Update, context: CallbackContext):
         query.edit_message_text(f"💰 Your Balance: ₹{balance}")
     elif query.data == "refer":
         link = f"https://t.me/{context.bot.username}?start={user_id}"
-        query.edit_message_text(f"🔗 Share your link:
-{link}")
+        query.edit_message_text(f"🔗 Share your referral link:\n{link}")
     elif query.data == "withdraw":
         balance = get_balance(user_id)
         if balance >= 10:
@@ -151,3 +149,4 @@ dp.add_handler(CommandHandler("reward", lambda update, context: context.bot.send
 if __name__ == '__main__':
     updater.start_polling()
     app.run(host='0.0.0.0', port=3000)
+                      
