@@ -1,14 +1,25 @@
+# Required modules
 import os
 import ctypes
 import sqlite3
-from flask import Flask, request
+
+try:
+    from flask import Flask, request
+except ImportError:
+    print("[❗] Flask module not found. Run: pip install flask")
+    exit()
+
 from telegram import Bot, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, CallbackContext, Updater, CallbackQueryHandler
 
 # Load C++ shared library for UPI validation
-lib = ctypes.CDLL('./validate.so')
-lib.isValidUPI.argtypes = [ctypes.c_char_p]
-lib.isValidUPI.restype = ctypes.c_bool
+try:
+    lib = ctypes.CDLL('./validate.so')
+    lib.isValidUPI.argtypes = [ctypes.c_char_p]
+    lib.isValidUPI.restype = ctypes.c_bool
+except Exception as e:
+    print("[❗] Error loading validate.so UPI library:", e)
+    exit()
 
 # Telegram Bot token and admin setup
 token = "7114393656:AAEhqBLjEHCC5M0DYuWCkxpM88OvroF4xQo"
@@ -65,7 +76,6 @@ def start(update: Update, context: CallbackContext):
     args = context.args
     referred_by = int(args[0]) if args and args[0].isdigit() else None
 
-    # Check if user joined all channels
     for ch in CHANNELS:
         try:
             status = bot.get_chat_member(chat_id=ch, user_id=user_id).status
@@ -149,4 +159,3 @@ dp.add_handler(CommandHandler("reward", lambda update, context: context.bot.send
 if __name__ == '__main__':
     updater.start_polling()
     app.run(host='0.0.0.0', port=3000)
-                      
